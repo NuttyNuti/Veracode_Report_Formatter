@@ -1,0 +1,130 @@
+Public Sub Veracode_Scan_Result_Sorter()
+'
+' Veracode_Scan_Result_Sorter Macro
+' Prepares the raw data from Veracode Analytics to be copied into the Application Security Scan Results spreadsheet
+'
+    Dim msgBoxTitle As String, message As String
+    Dim msgBoxButtons As String, messageBox As String
+    '
+   'Set application count here
+    AppCount = 56
+    
+   'Send error message if row count has changed
+    If Range("A2:A200").Rows.Count <> AppCount + 1 Then
+        ' Define the components of the message box
+        msgBoxTitle = "Number of Applications Changed"  'Title
+        message = "The total number of scanned applications has changed.  Please update the macros with the new count."  'Message
+        msgBoxButtons = vbExclamation  'Button constant (https://msdn.microsoft.com/en-us/library/aa445082%28v=vs.60%29.aspx)
+        'Display the message box with the defined components
+        messageBox = MsgBox(message, msgBoxButtons, msgBoxTitle)
+    End If
+  
+  ' Sort Columns A-K by B then C
+    Cells.Select
+    ActiveWorkbook.Worksheets("application_security_scan_resul").Sort.SortFields. _
+        Clear
+    ActiveWorkbook.Worksheets("application_security_scan_resul").Sort.SortFields. _
+        Add Key:=Range("B2:B57"), SortOn:=xlSortOnValues, Order:=xlAscending, _
+        DataOption:=xlSortNormal  'Set to total initial row count
+    ActiveWorkbook.Worksheets("application_security_scan_resul").Sort.SortFields. _
+        Add Key:=Range("C2:C57"), SortOn:=xlSortOnValues, Order:=xlAscending, _
+        DataOption:=xlSortNormal  'Set to total initial row count
+    With ActiveWorkbook.Worksheets("application_security_scan_resul").Sort
+        .SetRange Range("A1:K57")  'Set to total initial row count
+        .Header = xlYes
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
+    
+  ' Autofit remaining columns
+    Columns("A:P").Select
+    Columns("A:P").EntireColumn.AutoFit
+  
+  ' Set Columns H-K to width 12
+    Columns("H:K").Select
+    Selection.ColumnWidth = 12
+    ActiveWindow.ScrollColumn = 2
+    ActiveWindow.ScrollColumn = 1
+    
+  ' Set Columns H-K to Date format
+    Columns("H:K").Select
+    Selection.NumberFormat = "m/d/yyyy"
+    Selection.NumberFormat = "m/d/yyyy"
+    
+  ' Replace blank cells with a "0" in Columns H-K
+    Selection.Replace What:="", Replacement:="0", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Selection.NumberFormat = "0"
+
+  ' Delete Column A
+    Columns("A:A").Select
+    Selection.Delete Shift:=xlToLeft
+  
+  ' Center Columns C-J
+    Columns("C:J").Select
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlBottom
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+  
+  ' Format Header: Wrap text, Bold, Center, Bottom border
+    Range("A1:J1").Select
+    With Selection
+        .HorizontalAlignment = xlGeneral
+        .VerticalAlignment = xlBottom
+        .WrapText = True
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Font.Bold = True
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlBottom
+        .WrapText = True
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    Selection.Borders(xlDiagonalDown).LineStyle = xlNone
+    Selection.Borders(xlDiagonalUp).LineStyle = xlNone
+    Selection.Borders(xlEdgeLeft).LineStyle = xlNone
+    Selection.Borders(xlEdgeTop).LineStyle = xlNone
+    With Selection.Borders(xlEdgeBottom)
+        .LineStyle = xlContinuous
+        .ColorIndex = 0
+        .TintAndShade = 0
+        .Weight = xlThin
+    End With
+    Selection.Borders(xlEdgeRight).LineStyle = xlNone
+    Selection.Borders(xlInsideVertical).LineStyle = xlNone
+    Selection.Borders(xlInsideHorizontal).LineStyle = xlNone
+  
+  ' Rename Sheet
+    Sheets("application_security_scan_resul").Select
+    Sheets("application_security_scan_resul").Name = "Veracode Report Data"
+  
+  ' Cleanup
+    Rows("58:64").Select  'Set to total initial row count +1
+    Selection.Delete Shift:=xlUp
+    Range("A1").Select
+    
+  ' Copy report data
+    Range("C2:D57").Select  'Set to total initial row count
+    Selection.Copy
+End Sub
