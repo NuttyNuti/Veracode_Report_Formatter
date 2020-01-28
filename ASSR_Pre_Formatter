@@ -1,0 +1,81 @@
+Public Sub ASSR_Pre_Formatter()
+'
+' ASSR_Pre_Formatter Macro
+' Gets the Application Security Scan Results dashboard ready to have data copied into it
+'
+   ' Replace the date in the existing formula with today's date
+    Dim wb As Workbook
+    Dim ws As Worksheet
+    Dim DateRange As Range
+    Dim TDate As String, Path As String, Title As String, currentDate As String, Extension As String, fileName As String, message As String, msgBoxTitle As String
+    Dim AppCount As Integer, i As Integer, TYear As Integer, TMonth As Integer, TDay As Integer, msgBoxButtons As Integer, messageBox As Integer
+    
+   'Set application count here
+    AppCount = 56
+
+    Set wb = ActiveWorkbook
+    Set ws = wb.Sheets("Dashboard")
+    Set DateRange = ws.Range("J2:J57")  ' "Last Code Scan (Days)" column  'Range goes to AppCount+1
+    
+    TDate = Date
+    TYear = Year(TDate)
+    TMonth = Month(TDate)
+    TDay = Day(TDate)
+    i = 1
+
+    While i <= AppCount
+        DateRange.Cells(i, 1).Value = "=DATE(" & TYear & "," & TMonth & "," & TDay & ")-K" & i + 1  ' Uses the "SAST Date" column (K)
+        i = i + 1
+    Wend
+    
+  ' Unhide Columns
+    Columns("K:K").EntireColumn.AutoFit  ' "SAST Date" column
+    Columns("N:N").EntireColumn.AutoFit  ' "DAST Date" column
+    
+  ' Save the file using today's date
+    'Define the elements of the file name
+    Path = "C:\Users\BenvenuA\Documents\Moody's\Projects\sSDLC\Dashboards\"  'Include backslash ("\")at the end of the path
+    Title = "Application Security Scan Results - MCO Dashboard "
+    currentDate = Format(Date, "yyyy-mm-dd")  'Define the date format
+    Extension = ".xlsx"
+    fileName = Path & Title & currentDate & Extension  'Define the concatonated file name
+    Application.DisplayAlerts = False
+    ActiveWorkbook.SaveAs fileName:=fileName, FileFormat:=xlOpenXMLWorkbook, CreateBackup:=False
+    Application.DisplayAlerts = True
+
+  ' Displays a message box that the macro completed successfully
+    ' Define the components of the message box
+    msgBoxTitle = "Macro Completed Successfully"  'Title
+    message = "The Application Security Scan Results macro completed successfully."  'Message
+    msgBoxButtons = vbInformation  'Button constant (https://msdn.microsoft.com/en-us/library/aa445082%28v=vs.60%29.aspx)
+    'Display the message box with the defined components
+    messageBox = MsgBox(message, msgBoxButtons, msgBoxTitle)
+
+  ' Procedure clears all globally defined variables from memory
+    'Clear objects (Example: "Set rngMyRange = Nothing")
+    'Ranges
+    Set DateRange = Nothing
+    'Worksheets
+    Set ws = Nothing
+    'Workbooks
+    Set wb = Nothing
+    
+    'Clear strings (Example: "strMyString = Empty")
+    TDate = Empty
+    Path = Empty
+    Title = Empty
+    currentDate = Empty
+    Extension = Empty
+    fileName = Empty
+    message = Empty
+    msgBoxTitle = Empty
+    
+    'Zero-out integers and floating point numbers (Example: "myNumber = 0")
+    AppCount = 0
+    i = 0
+    TYear = 0
+    TMonth = 0
+    TDay = 0
+    msgBoxButtons = 0
+    messageBox = 0
+End Sub
