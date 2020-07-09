@@ -1,5 +1,5 @@
 # Veracode_Report_Formatter
-Two macros to automatically prepare the existing repoprt and the new data to copy into it.
+Two macros to automatically prepare the existing report and the new data to copy into it.
 
 Veracode_Scan_Result_Sorter Macro
 ' Prepares the raw data from Veracode Analytics to be copied into the Application Security Scan Results spreadsheet
